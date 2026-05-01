@@ -44,7 +44,7 @@ func (r *Renderer) renderTokens(tokens Tokens) string {
 		case TokenCode:
 			result += r.theme.Code + token.Content + Reset
 		case TokenCodeBlock:
-			result += r.theme.CodeBlock + token.Content + Reset
+			result += r.renderCodeBlock(token.Content, r.width)
 		case TokenLink:
 			result += r.theme.Link + token.Content + Reset + " (" + r.theme.LinkBrace + token.URL + Reset + ")"
 		case TokenHeader1:
@@ -70,6 +70,23 @@ func (r *Renderer) renderTokens(tokens Tokens) string {
 		}
 	}
 	return result
+}
+
+func (r *Renderer) renderCodeBlock(content string, width int) string {
+	lines := strings.Split(content, "\n")
+	var result string
+	for _, line := range lines {
+		padded := line + strings.Repeat(" ", max(0, width-len(line)))
+		result += r.theme.CodeBlock + padded + Reset + "\n"
+	}
+	return result
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 func (r *Renderer) wrapText(text string, width int) string {
